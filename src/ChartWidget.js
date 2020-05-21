@@ -1,14 +1,21 @@
 import React from "react";
+import Chart from 'chart.js';
 
-class ChartHolder extends React.Component {
+class ChartWidget extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.myRef = React.createRef();
+  }
+
 	render() {
 		return (
-			<canvas id="myChart" width="400" height="400"></canvas>
+			<canvas ref={this.myRef}></canvas>
 		);
 	}
 
 	componentDidMount() {
-		var myChart = new Chart(ctx, {
+		var myChart = new Chart(this.myRef.current, {
 		    type: 'bar',
 		    data: {
 		        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -46,3 +53,5 @@ class ChartHolder extends React.Component {
 		});
   	}
 }
+
+export default ChartWidget;

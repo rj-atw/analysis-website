@@ -1,3 +1,24 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import App from './App'
+
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+
+ReactDOM.render( 
+  <Container>
+    <App/> 
+
+    <Row> 
+      <Button variant="primary">Add new Chart</Button>
+    </Row>  
+  </Container>, 
+document.getElementById('index'));
+
+/*
 //import { Table } from "apache-arrow";
 import init,{ reduce } from './hello_world.js'; 
 import {
@@ -43,3 +64,5 @@ const rainfall = Table.new(
 }
 
 foo();
+*/
+
