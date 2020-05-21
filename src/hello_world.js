@@ -1,0 +1,71 @@
+let cachegetUint8Memory0 = new Map();
+let moduleCache = new Map();
+
+function getUint8Memory0(wasm_mod) {
+	//cachegetUint32Memory0.buffer !== wasm.memory.buffer
+    if (!cachegetUint8Memory0.has(wasm_mod)) {
+        cachegetUint8Memory0.set(wasm_mod, new Uint8Array(wasm_mod.memory.buffer));
+    }
+    return cachegetUint8Memory0.get(wasm_mod);
+}
+
+let WASM_VECTOR_LEN = 0;
+
+function passArray8ToWasm0(arg, wasm_mod) {
+    const ptr = wasm_mod.__wbindgen_malloc(arg.length);
+    getUint8Memory0(wasm_mod).set(arg, ptr);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
+/**
+* @param {Uint32Array} a
+* @returns {number}
+*/
+export function reduce(wasm_mod, a) {
+    var ptr0 = passArray8ToWasm0(a, wasm_mod);
+    var len0 = WASM_VECTOR_LEN;
+
+    var ret = wasm_mod.reduce(ptr0, len0);
+    return ret >>> 0;
+}
+
+function init() {
+    if(moduleCache.has("a")) {
+	    return Promise.resolve(moduleCache.get("a"))
+    }
+
+    let result;
+    const imports = {};
+
+        const response = fetch("http://localhost:8080/add.wasm")
+        if (typeof WebAssembly.instantiateStreaming === 'function') {
+            result = WebAssembly.instantiateStreaming(response, imports)
+            .catch(e => {
+                return response
+                .then(r => {
+                    if (r.headers.get('Content-Type') != 'application/wasm') {
+                        console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
+                        return r.arrayBuffer();
+                    } else {
+                        throw e;
+                    }
+                })
+                .then(bytes => WebAssembly.instantiate(bytes, imports));
+            });
+        } else {
+            result = response
+            .then(r => r.arrayBuffer())
+            .then(bytes => WebAssembly.instantiate(bytes, imports));
+        }
+    return result.then(({instance, module}) => {
+        let wasm = instance.exports;
+        init.__wbindgen_wasm_module = module;
+	      moduleCache.set("a", wasm)   
+
+        return wasm;
+    });
+}
+
+export default init;
+
