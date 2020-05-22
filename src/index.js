@@ -8,15 +8,15 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-ReactDOM.render( 
-  <Container>
-    <App/> 
+import { Table } from "apache-arrow";
 
-    <Row> 
-      <Button variant="primary">Add new Chart</Button>
-    </Row>  
-  </Container>, 
-document.getElementById('index'));
+
+ReactDOM.render(
+  <Container>
+    <App/>
+  </Container>
+  ,document.getElementById('index')
+);
 
 /*
 //import { Table } from "apache-arrow";

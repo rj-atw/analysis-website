@@ -1,56 +1,90 @@
 import React from "react";
 import Chart from 'chart.js';
 
+import predicate from 'apache-arrow';
+import * as arrow from 'apache-arrow';
+
 class ChartWidget extends React.Component {
   constructor(props) {
     super(props);
 
     this.myRef = React.createRef();
+    
+    this.state = {
+    	columnName: props.columnName
+    }
   }
 
 	render() {
 		return (
+			<div>
+			{this.props.data.count()}<br/>
 			<canvas ref={this.myRef}></canvas>
+			</div>
 		);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if(this.props.data != nextProps.data) {
+			console.log('a');
+
+			function createPoint(v) { return {x: v, y: v}; }
+
+			let values = [];
+			let column = [];		
+			const name = this.state.columnName;	
+			
+			nextProps.data.scan( (idx) => {
+				values.push(column(idx));
+			}, (batch) => {
+			   column = new arrow.predicate.Col(name).bind(batch);
+			}); 
+
+			const l = Array.from(values, createPoint);
+
+			console.log(l.length);
+
+			this.myChart.data.datasets.forEach((dataset) => {
+				dataset.data = l;
+			})
+			this.myChart.update();
+		}
+	}
+
 	componentDidMount() {
-		var myChart = new Chart(this.myRef.current, {
-		    type: 'bar',
-		    data: {
-		        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-		        datasets: [{
-		            label: '# of Votes',
-		            data: [12, 19, 3, 5, 2, 3],
-		            backgroundColor: [
-		                'rgba(255, 99, 132, 0.2)',
-		                'rgba(54, 162, 235, 0.2)',
-		                'rgba(255, 206, 86, 0.2)',
-		                'rgba(75, 192, 192, 0.2)',
-		                'rgba(153, 102, 255, 0.2)',
-		                'rgba(255, 159, 64, 0.2)'
-		            ],
-		            borderColor: [
-		                'rgba(255, 99, 132, 1)',
-		                'rgba(54, 162, 235, 1)',
-		                'rgba(255, 206, 86, 1)',
-		                'rgba(75, 192, 192, 1)',
-		                'rgba(153, 102, 255, 1)',
-		                'rgba(255, 159, 64, 1)'
-		            ],
-		            borderWidth: 1
-		        }]
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
-		                ticks: {
-		                    beginAtZero: true
-		                }
-		            }]
-		        }
-		    }
-		});
+		function createPoint(v) { return {x: v, y: v}; }
+		let values = [];
+		let column = [];
+		const name = this.state.columnName;
+
+
+		this.props.data.scan( (idx) => {
+			values.push(column(idx));
+		}, (batch) => {
+		   column = new arrow.predicate.Col(name).bind(batch);
+		}); 
+
+		
+		const l = Array.from(values, createPoint);
+		console.log(l);
+
+		this.myChart = new Chart(this.myRef.current, {
+	    type: 'scatter',
+	    data: {
+	        datasets: [{
+	            label: 'Scatter Dataset',
+	            data: l
+	        }]
+	    },
+	    options: {
+	        scales: {
+	            xAxes: [{
+	                type: 'linear',
+	                position: 'bottom'
+	            }]
+	        }
+	    }
+});
   	}
 }
 
