@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ChartWidget from './ChartWidget'
+import DashboardControl from './DashboardControl'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -68,7 +69,9 @@ class App extends React.Component {
     this.addChart = this.addChart.bind(this);
     this.currentSelection = this.currentSelection.bind(this);    
     this.filter = this.filter.bind(this);    
+    this.applyFilters = this.applyFilters.bind(this);    
 
+    this.baseData = data;
   }
 
   addChart(event) {
@@ -92,9 +95,20 @@ class App extends React.Component {
     });
   }
 
+  applyFilters(filters) {
+    this.setState(function(state, props) {
+      let andedFilter = filters.reduce( (acc, filter) => acc.and(filter));
+      console.log(andedFilter);
+      return {data: this.baseData.filter(andedFilter) }
+    });
+  }
+
   render() { 
     return (
     <div>
+      <Row bgcolor="blue">
+        <DashboardControl schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters}/>
+      </Row>
       <Row>
          <ChartList charts={this.state.charts} data={this.state.data}/>
       </Row>
