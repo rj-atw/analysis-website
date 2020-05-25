@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
 import SelectionDropdown from './SelectionDropdown'
+import FileSelector from './FileSelector'
 
 import { DataType, Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
 
@@ -34,11 +35,13 @@ function DashboardControl(props) {
     setFilters(filters.concat(column + " " + filterToApply + " " + filterValue + "; "))
   }
 
+
   return (
     <Navbar bg="light">
+      <FileSelector setData={props.setData}/>
       <InputGroup className="xs-6">
         <InputGroup.Prepend>
-          <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type)).map(field => field.name) } onSelect={setColumn}/>
+          <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={setColumn}/>
           <SelectionDropdown selectionList={filterType} onSelect={setFilterToApply} /> 
         </InputGroup.Prepend>
         <Form.Control onChange={(e) => setFilterValue(e.target.value)} value={filterValue}/>

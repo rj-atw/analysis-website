@@ -24,13 +24,13 @@ class ChartWidget extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(this.props.data != nextProps.data) {
+		if(this.props.data != nextProps.data) { //&& nextProps.data.schema.fields.includes(f => f.name == nextProps.columnName)) {
 
 			function createPoint(v) { return {x: v, y: v}; }
 
 			let values = [];
 			let column = [];		
-			const name = this.state.columnName;	
+			const name = nextProps.columnName
 
 			nextProps.data.scan( (idx) => {
 				values.push(column(idx));

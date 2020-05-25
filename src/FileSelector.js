@@ -1,12 +1,27 @@
-import React from 'react';
+import React from 'react'
 
-import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
+
+import { Table } from "apache-arrow";
 
 function FileSelector(props) {
-   React.useState();
+   const defaultValue = ""
+   const [value, setValue] = React.useState(defaultValue);
+
+   function load() {
+     Table.from(fetch(value)).then(table =>
+       props.setData(table)
+     )
+   }
    
    return (
      <InputGroup>
+       <InputGroup.Append>
+         <Form.Control onChange={ e => setValue(e.target.value)}  value={value} />
+         <Button onClick={load}>loadFile</Button>
+       </InputGroup.Append>
      </InputGroup>
    );
 }

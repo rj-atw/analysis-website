@@ -7,6 +7,7 @@ const htmlPlugin = new HtmlWebPackPlugin({
 
 module.exports = {
   entry: ['babel-regenerator-runtime', './src/index.js'],
+  devtool: "source-map",
   module: {
     rules: [
       {

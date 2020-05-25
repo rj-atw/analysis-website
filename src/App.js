@@ -24,38 +24,9 @@ function ChartList(props) {
   const charts = props.charts;
   const data = props.data;
 
-  console.log(charts);
-
   return charts.map( (chart) => 
     <ChartHolder key={chart.name.toString()} data={data} columnName={chart.column}/>
   );
-}
-
-async function generateData() {
-  return await Table.from(fetch("/scrabble.arrow"));
-/*
-  const LENGTH = 50;
-
-const r = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 20).toFixed(1)));
-
-
-const rainAmounts = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 50).toFixed(1)));
-
-const rain2 = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 10+3).toFixed(1)));
-
-
-return Table.new(
-  [Utf8Vector.from(r), FloatVector.from(rainAmounts), FloatVector.from(rain2)],
-    ['city','lat', 'lng']
-    );
-*/
-
 }
 
 class App extends React.Component {
@@ -65,9 +36,11 @@ class App extends React.Component {
 
     const data = props.data;
     this.state = { 
-      charts: [{name:1, column: data.schema.fields[0].name}],
+      charts: [],
+      //charts: [{name:1, column: data.schema.fields[0].name}],
       data: data,
-      currentSelection: data.schema.fields[0].name
+      currentSelection: data.schema.fields[0].name,
+      baseData: data
      };
 
     // This binding is necessary to make `this` work in the callback
@@ -75,8 +48,15 @@ class App extends React.Component {
     this.currentSelection = this.currentSelection.bind(this);    
     this.filter = this.filter.bind(this);    
     this.applyFilters = this.applyFilters.bind(this);    
+    this.setData = this.setData.bind(this);
+  }
 
-    this.baseData = data;
+  setData(data) {
+     this.setState( function(state,prop) { return { 
+       charts: [],
+    //   charts: [{name:1, column: data.schema.fields[0].name}],
+       baseData: data, data: data
+     }})
   }
 
   addChart(event) {
@@ -84,13 +64,11 @@ class App extends React.Component {
     this.setState(function(state, props) {
       var charts = this.state.charts;
       const newChart = charts.concat([{name: charts.length+1, column: this.state.currentSelection}]);
-      console.log(newChart);
       return { charts: newChart}
    });
   }
 
   currentSelection(event) {
-    console.log(event.target.value);
     this.setState({currentSelection: event.target.value});
   }
 
@@ -103,8 +81,7 @@ class App extends React.Component {
   applyFilters(filters) {
     this.setState(function(state, props) {
       let andedFilter = filters.reduce( (acc, filter) => acc.and(filter));
-      console.log(andedFilter);
-      return {data: this.baseData.filter(andedFilter) }
+      return {data: this.state.baseData.filter(andedFilter) }
     });
   }
 
@@ -112,7 +89,7 @@ class App extends React.Component {
     return (
     <div>
       <Row bgcolor="blue">
-        <DashboardControl schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters}/>
+        <DashboardControl setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters}/>
       </Row>
       <Row>
          <Col xs={12} sm={6} lg={4}>
