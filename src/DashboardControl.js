@@ -7,16 +7,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-import SchemaDropdown from './SchemaDropdown'
 import SelectionDropdown from './SelectionDropdown'
 
-import { Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
+import { DataType, Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
 
-         // <SchemaDropdown schema={props.schema} onSelect={setFoo}/> 
 function DashboardControl(props) {
   const filterType = ["<", ">", "=="];
 
-  const [column, setColumn] = React.useState(0);
+  const [column, setColumn] = React.useState(props.schema.fields[0].name);
   const [filterToApply, setFilterToApply] = React.useState(filterType[0]);
   const [filterValue, setFilterValue] = React.useState(0);
   const [filters, setFilters] = React.useState("");
@@ -37,11 +35,10 @@ function DashboardControl(props) {
   }
 
   return (
-   <div>
     <Navbar bg="light">
       <InputGroup className="xs-6">
         <InputGroup.Prepend>
-          <SelectionDropdown selectionList={ props.schema.fields.map(field => field.name) } onSelect={setColumn}/>
+          <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type)).map(field => field.name) } onSelect={setColumn}/>
           <SelectionDropdown selectionList={filterType} onSelect={setFilterToApply} /> 
         </InputGroup.Prepend>
         <Form.Control onChange={(e) => setFilterValue(e.target.value)} value={filterValue}/>
@@ -50,8 +47,6 @@ function DashboardControl(props) {
         </InputGroup.Append>
       </InputGroup>
     </Navbar>
-      Filters = {filters}
-    </div>
   );
 }
 

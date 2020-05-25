@@ -18,7 +18,6 @@ class ChartWidget extends React.Component {
 	render() {
 		return (
 			<div>
-			{this.props.data.count()}<br/>
 			<canvas ref={this.myRef}></canvas>
 			</div>
 		);
@@ -26,23 +25,20 @@ class ChartWidget extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		if(this.props.data != nextProps.data) {
-			console.log('a');
 
 			function createPoint(v) { return {x: v, y: v}; }
 
 			let values = [];
 			let column = [];		
 			const name = this.state.columnName;	
-			
+
 			nextProps.data.scan( (idx) => {
 				values.push(column(idx));
 			}, (batch) => {
 			   column = new arrow.predicate.Col(name).bind(batch);
 			}); 
 
-			const l = Array.from(values, createPoint);
-
-			console.log(l.length);
+			const l = Array.from(values.slice(0,100), createPoint);
 
 			this.myChart.data.datasets.forEach((dataset) => {
 				dataset.data = l;
@@ -65,14 +61,13 @@ class ChartWidget extends React.Component {
 		}); 
 
 		
-		const l = Array.from(values, createPoint);
-		console.log(l);
+		const l = Array.from(values.slice(0,100), createPoint);
 
 		this.myChart = new Chart(this.myRef.current, {
 	    type: 'scatter',
 	    data: {
 	        datasets: [{
-	            label: 'Scatter Dataset',
+	            label: name,
 	            data: l
 	        }]
 	    },

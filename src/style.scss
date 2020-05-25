@@ -1,0 +1,8 @@
+@import "custom";
+@import "~bootstrap/scss/bootstrap";
+
+$table-line-height-base:          0.5;
+
+.table {
+  line-height: $table-line-height-base;
+}

@@ -2,11 +2,13 @@ import React from 'react';
 
 import ChartWidget from './ChartWidget'
 import DashboardControl from './DashboardControl'
+import ChartTable from './ChartTable'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
 
 
 import { Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
@@ -14,7 +16,7 @@ import { Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
 
 function ChartHolder(props) {
   return (
-    <Col xs={3}> <ChartWidget data={props.data} columnName={props.columnName}/> </Col>
+    <Col xs={12}> <ChartWidget data={props.data} columnName={props.columnName}/> </Col>
   );
 }
 
@@ -29,7 +31,9 @@ function ChartList(props) {
   );
 }
 
-function generateData() {
+async function generateData() {
+  return await Table.from(fetch("/scrabble.arrow"));
+/*
   const LENGTH = 50;
 
 const r = Float64Array.from(
@@ -50,6 +54,7 @@ return Table.new(
   [Utf8Vector.from(r), FloatVector.from(rainAmounts), FloatVector.from(rain2)],
     ['city','lat', 'lng']
     );
+*/
 
 }
 
@@ -58,11 +63,11 @@ class App extends React.Component {
     super(props);
 
 
-    const data = generateData();
+    const data = props.data;
     this.state = { 
-      charts: [{name:1, column: 'lat'}, {name:2, column: 'lat'}],
+      charts: [{name:1, column: data.schema.fields[0].name}],
       data: data,
-      currentSelection: 'lat'
+      currentSelection: data.schema.fields[0].name
      };
 
     // This binding is necessary to make `this` work in the callback
@@ -110,7 +115,31 @@ class App extends React.Component {
         <DashboardControl schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters}/>
       </Row>
       <Row>
-         <ChartList charts={this.state.charts} data={this.state.data}/>
+         <Col xs={12} sm={6} lg={4}>
+           <Card>
+             <Card.Body>
+               <ChartList charts={this.state.charts} data={this.state.data}/>
+             </Card.Body>
+           </Card>  
+         </Col>
+         <Col xs={12} sm={6} lg={8}>
+           <Row>
+            <Col xs={6} sm={6} lg={4}>
+               <Card>
+                <Card.Body>
+                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]}/>
+                </Card.Body>
+               </Card>
+            </Col>
+            <Col xs={6} sm={6} lg={4}>
+               <Card>
+                <Card.Body>
+                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]}/>
+                </Card.Body>
+               </Card>
+            </Col>
+            </Row>
+         </Col>
       </Row>
       <Row>
           <Form>

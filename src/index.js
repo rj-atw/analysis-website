@@ -1,3 +1,6 @@
+
+import './style.scss'
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -10,59 +13,18 @@ import Button from 'react-bootstrap/Button';
 
 import { Table } from "apache-arrow";
 
+async function generateData() {
+  return await Table.from(fetch("/gov.arrow"));
+  //return await Table.from(fetch("https://gist.githubusercontent.com/TheNeuralBit/64d8cc13050c9b5743281dcf66059de5/raw/c146baf28a8e78cfe982c6ab5015207c4cbd84e3/scrabble.arrow"));
+}
 
+
+generateData().then(data => {
 ReactDOM.render(
   <Container>
-    <App/>
+    <App data={data.slice(0,50000)}/>
   </Container>
   ,document.getElementById('index')
 );
-
-/*
-//import { Table } from "apache-arrow";
-import init,{ reduce } from './hello_world.js'; 
-import {
-    Table,
-      FloatVector,
-        DateVector, Utf8Vector, RecordBatchJSONWriter, RecordBatchWriter,
-} from 'apache-arrow';
-
-async function foo() {
- // const arrow = await fetch(("/simple.arrow"));
-
-
- // Table.from(arrow).then(rainfall => console.log(new RecordBatchJSONWriter().writeAll(rainfall).toString(true)));
-
-const LENGTH = 2000;
-
-const r = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 20).toFixed(1)));
-
-
-const rainAmounts = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 20).toFixed(1)));
-
-const rain2 = Float64Array.from(
-  { length: LENGTH },
-    () => Number((Math.random() * 20).toFixed(1)));
-
-
-const rainfall = Table.new(
-  [Utf8Vector.from(r), FloatVector.from(rainAmounts), DateVector.from(rain2)],
-    ['city','lat', 'lng']
-    );
-
-  const data = new RecordBatchWriter().writeAll(rainfall).toUint8Array(true);
-
- //const data = await arrow.blob(); 
-
-  let rv = await init();
-  const result = reduce(rv, data);//new Uint8Array(data.arrayBuffer()));
-  console.log(result);
 }
-
-foo();
-*/
-
+);
