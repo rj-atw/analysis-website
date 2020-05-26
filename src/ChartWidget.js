@@ -23,7 +23,7 @@ class ChartWidget extends React.Component {
 		);
 	}
 
-	componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps) {
 		if(this.props.data != nextProps.data) { //&& nextProps.data.schema.fields.includes(f => f.name == nextProps.columnName)) {
 
 			function createPoint(v) { return {x: v, y: v}; }

@@ -19,7 +19,7 @@ function LimitRows(props) {
 		column2 = new arrow.predicate.Col(props.column[1]).bind(batch);
 	}); 
 
-  return Array.from({length: 10}, (x,i) => <tr><td>{values1[i]}</td><td>{values2[i]}</td></tr>)
+  return Array.from({length: 10}, (x,i) => <tr key={i}><td>{values1[i]}</td><td>{values2[i]}</td></tr>)
 }
 
 

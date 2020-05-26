@@ -1,4 +1,6 @@
 let cachegetUint8Memory0 = new Map();
+let cachegetFloat64Memory0 = new Map();
+let cachegetBigInt64Memory0 = new Map();
 let moduleCache = new Map();
 
 function getUint8Memory0(wasm_mod) {
@@ -8,6 +10,23 @@ function getUint8Memory0(wasm_mod) {
     }
     return cachegetUint8Memory0.get(wasm_mod);
 }
+
+function getFloat64Memory0(wasm_mod) {
+	//cachegetUint32Memory0.buffer !== wasm.memory.buffer
+    if (!cachegetFloat64Memory0.has(wasm_mod)) {
+        cachegetFloat64Memory0.set(wasm_mod, new Float64Array(wasm_mod.memory.buffer));
+    }
+    return cachegetFloat64Memory0.get(wasm_mod);
+}
+
+function getBigInt64Memory0(wasm_mod) {
+	//cachegetUint32Memory0.buffer !== wasm.memory.buffer
+    if (!cachegetBigInt64Memory0.has(wasm_mod)) {
+        cachegetBigInt64Memory0.set(wasm_mod, new BigInt64Array(wasm_mod.memory.buffer));
+    }
+    return cachegetBigInt64Memory0.get(wasm_mod);
+}
+
 
 let WASM_VECTOR_LEN = 0;
 
@@ -30,7 +49,22 @@ export function reduce(wasm_mod, a) {
     return ret >>> 0;
 }
 
-function init() {
+/**
+* @param {Uint32Array} a
+* @returns {number}
+*/
+export function map(wasm_mod, a) {
+    var ptr0 = passArray8ToWasm0(a, wasm_mod);
+    var len0 = WASM_VECTOR_LEN;
+
+    var len1 = 500;
+    var ptr1 = wasm_mod.map(ptr0, len0) /8;
+
+    var ret = getBigInt64Memory0(wasm_mod).slice(ptr1, ptr1+len1);
+    return ret;
+}
+
+export function init() {
     if(moduleCache.has("a")) {
 	    return Promise.resolve(moduleCache.get("a"))
     }
@@ -67,5 +101,4 @@ function init() {
     });
 }
 
-export default init;
 
