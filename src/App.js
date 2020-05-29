@@ -100,34 +100,30 @@ class App extends React.Component {
   render() { 
     return (
     <div>
-      <Row bgcolor="blue">
-        <DashboardControl setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy}/>
+      <Row bgcolor="blue" className="pb-5">
+        <DashboardControl key={this.state.data.schema} setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy} sortBy={this.state.sortBy}/>
       </Row>
-      <Row>
-         <Col xs={12} md={6} lg={4}>
+      <Row xs={1} md={2} lg={3}>
+         <Col>
            <Card>
              <Card.Body>
                <ChartList charts={this.state.charts} data={this.state.data} filters={this.state.filters}/>
              </Card.Body>
            </Card>  
          </Col>
-         <Col xs={12} md={6} lg={8}>
-           <Row>
-            <Col xs={6} md={6} lg={4}>
-               <Card>
-                <Card.Body>
-                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
+         <Col>
+             <Card>
+             <Card.Body>
+                <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
                 </Card.Body>
-               </Card>
-            </Col>
-            <Col xs={6} md={6} lg={4}>
-               <Card>
-                <Card.Body>
-                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
-                </Card.Body>
-               </Card>
-            </Col>
-            </Row>
+            </Card>
+         </Col>
+         <Col>
+           <Card>
+               <Card.Body>
+                 <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
+               </Card.Body>
+           </Card>
          </Col>
       </Row>
       <Row>

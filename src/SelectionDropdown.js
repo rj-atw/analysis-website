@@ -13,24 +13,17 @@ function SelectionItems(props) {
    The displayname is based on the eventKey of child Dropdown items
 */
 function SelectionDropdown(props) {
-  const [currentSelection, setCurrentSelection] = React.useState(props.selectionList[0])
-
-  function onSelect(eventKey, e) {
-    setCurrentSelection(eventKey);
-    props.onSelect(eventKey);
-  }
-  
    return (
-    <Dropdown onSelect={onSelect}>
+    <Dropdown onSelect={(eventKey,e) => props.onSelect(eventKey)}>
       <Dropdown.Toggle>
-        {currentSelection}
+        {props.currentSelection}
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
         <SelectionItems fields={props.selectionList} />
       </Dropdown.Menu>
     </Dropdown>
-    );
+   );
 }
 
 export default SelectionDropdown;

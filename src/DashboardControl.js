@@ -14,10 +14,17 @@ import FileSelector from './FileSelector'
 
 import { DataType, Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
 
+
 function DashboardControl(props) {
   const filterType = ["<", ">", "=="];
 
-  const [column, setColumn] = React.useState(props.schema.fields[0].name);
+  const filterableColumns = props.schema.fields.filter(
+    field => DataType.isInt(field.type) || 
+    DataType.isFloat(field.type) || 
+    DataType.isDecimal(field.type)
+  ).map(field => field.name) 
+
+  const [column, setColumn] = React.useState(filterableColumns[0]);
   const [filterToApply, setFilterToApply] = React.useState(filterType[0]);
   const [filterValue, setFilterValue] = React.useState(0);
   const [filters, setFilters] = React.useState("");
@@ -44,7 +51,7 @@ function DashboardControl(props) {
       <FileSelector className="col-sm-12 col-md-5 col-lg-4" setData={props.setData}/>
       <InputGroup className="col-sm-12 col-md-5 col-lg-4">
         <InputGroup.Prepend>
-          <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={setColumn}/>
+          <SelectionDropdown selectionList={filterableColumns} currentSelection={column} onSelect={setColumn}/>
           <SelectionDropdown selectionList={filterType} onSelect={setFilterToApply} /> 
         </InputGroup.Prepend>
         <Form.Control onChange={(e) => setFilterValue(e.target.value)} value={filterValue}/>
@@ -54,7 +61,7 @@ function DashboardControl(props) {
       </InputGroup>
       <InputGroup className="col-sm-6 col-md-3 ml-auto">
       <label>SortBy</label>
-      <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={props.setSortBy}/>
+      <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } currentSelection={props.sortBy} onSelect={props.setSortBy}/>
       </InputGroup>
       </Row>
       </Container>
