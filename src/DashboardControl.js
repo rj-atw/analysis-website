@@ -49,6 +49,10 @@ function DashboardControl(props) {
           <Button onClick={addFilter}> Add Filter </Button>
         </InputGroup.Append>
       </InputGroup>
+      <InputGroup>
+      <label>SortBy</label>
+      <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={props.setSortBy}/>
+      </InputGroup>
     </Navbar>
   );
 }

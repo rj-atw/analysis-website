@@ -13,7 +13,9 @@ import Button from 'react-bootstrap/Button';
 
 import { Table } from "apache-arrow";
 
-import { init, reduce, map } from "./hello_world";
+import { Utf8Vector, FloatVector, predicate } from "apache-arrow";
+
+import { init, reduce, map, filter, sort } from "./wasm_interopt";
 
 async function getSerializedData() {
   return await fetch("/speeches.arrow")
@@ -23,10 +25,12 @@ async function generateData() {
   return init().then(wasm => {
     return getSerializedData().then(resp => {
       return resp.arrayBuffer().then(function(data) {
-        console.log(map(wasm, new Uint8Array(data)))
+
+        const arr = new Uint8Array(data)
+
         let d = Table.from(data)
-        console.log(d.schema)
-        return d
+
+        return { data: d, value: arr, wasm: wasm }
       })
     })
   })
@@ -36,7 +40,7 @@ async function generateData() {
 generateData().then(data => {
 ReactDOM.render(
   <Container>
-    <App data={data.slice(0,50000)}/>
+    <App data={data.data} serial={data.value} wasm={data.wasm}/>
   </Container>
   ,document.getElementById('index')
 );

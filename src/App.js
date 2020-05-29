@@ -11,7 +11,7 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 
 
-import { Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
+import { DataType, Table, Utf8Vector, FloatVector, predicate } from "apache-arrow";
 
 
 function ChartHolder(props) {
@@ -21,12 +21,16 @@ function ChartHolder(props) {
 }
 
 function ChartList(props) {
-  const charts = props.charts;
-  const data = props.data;
+  const charts = props.charts
+  const data = props.filters ? props.data.filter(props.filters) : props.data
 
   return charts.map( (chart) => 
     <ChartHolder key={chart.name.toString()} data={data} columnName={chart.column}/>
   );
+}
+
+function getSortableColumnName(schema) {
+  return schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name)
 }
 
 class App extends React.Component {
@@ -35,27 +39,34 @@ class App extends React.Component {
 
 
     const data = props.data;
+
     this.state = { 
       charts: [],
       //charts: [{name:1, column: data.schema.fields[0].name}],
       data: data,
       currentSelection: data.schema.fields[0].name,
-      baseData: data
+      baseData: data,
+      serial: props.serial,
+      filters: null,
+      sortBy: getSortableColumnName(data.schema)[2]
      };
 
+    this.wasm = props.wasm
+
     // This binding is necessary to make `this` work in the callback
-    this.addChart = this.addChart.bind(this);
-    this.currentSelection = this.currentSelection.bind(this);    
-    this.filter = this.filter.bind(this);    
-    this.applyFilters = this.applyFilters.bind(this);    
-    this.setData = this.setData.bind(this);
+    this.addChart = this.addChart.bind(this)
+    this.currentSelection = this.currentSelection.bind(this)    
+    this.applyFilters = this.applyFilters.bind(this)   
+    this.setData = this.setData.bind(this)
+    this.setSortBy = this.setSortBy.bind(this)
   }
 
   setData(data) {
      this.setState( function(state,prop) { return { 
        charts: [],
-    //   charts: [{name:1, column: data.schema.fields[0].name}],
-       baseData: data, data: data
+       baseData: data, 
+       data: data,
+       sortBy: getSortableColumnName(data.schema)[0]
      }})
   }
 
@@ -72,30 +83,31 @@ class App extends React.Component {
     this.setState({currentSelection: event.target.value});
   }
 
-  filter() {
-    this.setState(function(state, props) {
-      return {data: this.state.data.filter(predicate.col('lat').gt(5)) }
-    });
-  }
-
   applyFilters(filters) {
     this.setState(function(state, props) {
       let andedFilter = filters.reduce( (acc, filter) => acc.and(filter));
-      return {data: this.state.baseData.filter(andedFilter) }
+      return {
+        filters: andedFilter
+       // data: this.state.baseData.filter(andedFilter)
+      }
     });
+  }
+
+  setSortBy(columnName) {
+    this.setState({sortBy: columnName})
   }
 
   render() { 
     return (
     <div>
       <Row bgcolor="blue">
-        <DashboardControl setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters}/>
+        <DashboardControl setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy}/>
       </Row>
       <Row>
          <Col xs={12} sm={6} lg={4}>
            <Card>
              <Card.Body>
-               <ChartList charts={this.state.charts} data={this.state.data}/>
+               <ChartList charts={this.state.charts} data={this.state.data} filters={this.state.filters}/>
              </Card.Body>
            </Card>  
          </Col>
@@ -104,14 +116,14 @@ class App extends React.Component {
             <Col xs={6} sm={6} lg={4}>
                <Card>
                 <Card.Body>
-                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]}/>
+                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
                 </Card.Body>
                </Card>
             </Col>
             <Col xs={6} sm={6} lg={4}>
                <Card>
                 <Card.Body>
-                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]}/>
+                  <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
                 </Card.Body>
                </Card>
             </Col>
@@ -131,9 +143,6 @@ class App extends React.Component {
             </Form.Row>
           </Form>
       </Row>  
-      <Row>
-        <Button variant="primary" onClick={this.filter}>Filter</Button>
-      </Row>
     </div>
   );}
 }
