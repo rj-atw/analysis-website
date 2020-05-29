@@ -46,7 +46,7 @@ function formatForDisplay(value) {
 
 function LimitRows(props) {
   const idx = props.data.getColumnIndex(props.sortBy)
-  console.log(props.data.getColumn(props.sortBy))
+
   const sortRowIdx = sort(props.wasm, props.serial, createFilterVector(props.data, props.filters), idx, 10)
 
   let values1 = []
