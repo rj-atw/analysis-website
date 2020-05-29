@@ -104,23 +104,23 @@ class App extends React.Component {
         <DashboardControl setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy}/>
       </Row>
       <Row>
-         <Col xs={12} sm={6} lg={4}>
+         <Col xs={12} md={6} lg={4}>
            <Card>
              <Card.Body>
                <ChartList charts={this.state.charts} data={this.state.data} filters={this.state.filters}/>
              </Card.Body>
            </Card>  
          </Col>
-         <Col xs={12} sm={6} lg={8}>
+         <Col xs={12} md={6} lg={8}>
            <Row>
-            <Col xs={6} sm={6} lg={4}>
+            <Col xs={6} md={6} lg={4}>
                <Card>
                 <Card.Body>
                   <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
                 </Card.Body>
                </Card>
             </Col>
-            <Col xs={6} sm={6} lg={4}>
+            <Col xs={6} md={6} lg={4}>
                <Card>
                 <Card.Body>
                   <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>

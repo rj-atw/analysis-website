@@ -65,7 +65,7 @@ function LimitRows(props) {
 function ChartTable(props) {
 
   return (
-    <Table striped bordered size="sm">
+    <Table striped bordered size="sm" responsive>
       <thead>
         <tr>
           <th>{props.columns[0]}</th>
