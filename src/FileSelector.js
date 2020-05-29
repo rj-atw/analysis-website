@@ -17,7 +17,7 @@ function FileSelector(props) {
    }
    
    return (
-     <InputGroup>
+     <InputGroup className={props.className}>
        <InputGroup.Append>
          <Form.Control onChange={ e => setValue(e.target.value)}  value={value} />
          <Button onClick={load}>loadFile</Button>

@@ -6,6 +6,8 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 
 import SelectionDropdown from './SelectionDropdown'
 import FileSelector from './FileSelector'
@@ -37,9 +39,10 @@ function DashboardControl(props) {
 
 
   return (
-    <Navbar bg="light">
-      <FileSelector setData={props.setData}/>
-      <InputGroup className="xs-6">
+   <Container>
+     <Row>
+      <FileSelector className="col-sm-12 col-md-5 col-lg-4" setData={props.setData}/>
+      <InputGroup className="col-sm-12 col-md-5 col-lg-4">
         <InputGroup.Prepend>
           <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={setColumn}/>
           <SelectionDropdown selectionList={filterType} onSelect={setFilterToApply} /> 
@@ -49,11 +52,12 @@ function DashboardControl(props) {
           <Button onClick={addFilter}> Add Filter </Button>
         </InputGroup.Append>
       </InputGroup>
-      <InputGroup>
+      <InputGroup className="col-sm-6 col-md-3 ml-auto">
       <label>SortBy</label>
       <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } onSelect={props.setSortBy}/>
       </InputGroup>
-    </Navbar>
+      </Row>
+      </Container>
   );
 }
 
