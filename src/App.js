@@ -30,7 +30,7 @@ function ChartList(props) {
 }
 
 function getSortableColumnName(schema) {
-  return schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name)
+  return schema.fields.filter(field => DataType.isInt(field.type) || DataType.isUtf8(field.type)).map(field => field.name)
 }
 
 class App extends React.Component {
@@ -48,7 +48,7 @@ class App extends React.Component {
       baseData: data,
       serial: props.serial,
       filters: null,
-      sortBy: getSortableColumnName(data.schema)[2]
+      sortBy: getSortableColumnName(data.schema)[0]
      };
 
     this.wasm = props.wasm

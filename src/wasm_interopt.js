@@ -72,11 +72,19 @@ export function sort(wasm_mod, a, filter, idx, limit) {
     var ptr1 = passArray8ToWasm0(filter, wasm_mod);
 
     const out_ptr = wasm_mod.__wbindgen_malloc(limit*4);
+    const err_ptr = wasm_mod.__wbindgen_malloc(200);
 
-    var ret_ptr = wasm_mod.limit_sorted_filter(ptr0, len0, ptr1, filter.length, idx, limit, out_ptr)/4;
-    var ret = getUint32Memory0(wasm_mod).slice(ret_ptr, ret_ptr+limit);
+    var ret_ptr = wasm_mod.limit_sorted_filter(ptr0, len0, ptr1, filter.length, idx, limit, out_ptr, err_ptr)/4;
+    if(ret_ptr==0) {
+      var err = new TextDecoder("utf-8").decode(getUint8Memory0(wasm_mod).slice(err_ptr, err_ptr+200))
+      console.log(err)
 
-    return ret
+      return null
+    } else {
+      var ret = getUint32Memory0(wasm_mod).slice(ret_ptr, ret_ptr+limit)
+
+      return ret
+    }
 }
 
 /**
