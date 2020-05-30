@@ -101,7 +101,7 @@ class App extends React.Component {
     return (
     <div>
       <Row bgcolor="blue" className="pb-5">
-        <DashboardControl key={this.state.data.schema} setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy} sortBy={this.state.sortBy}/>
+        <DashboardControl key={this.state.data.schema} setData={this.setData} schema={this.state.data.schema} propagateSelectedFilter={this.applyFilters} setSortBy={this.setSortBy} sortBy={this.state.sortBy} sortableList={getSortableColumnName(this.state.data.schema)}/>
       </Row>
       <Row xs={1} md={2} lg={3}>
          <Col>

@@ -61,7 +61,7 @@ function DashboardControl(props) {
       </InputGroup>
       <InputGroup className="col-sm-6 col-md-3 ml-auto">
       <label>SortBy</label>
-      <SelectionDropdown selectionList={ props.schema.fields.filter(field => DataType.isInt(field.type) || DataType.isFloat(field.type) || DataType.isDecimal(field.type)).map(field => field.name) } currentSelection={props.sortBy} onSelect={props.setSortBy}/>
+      <SelectionDropdown selectionList={props.sortableList} currentSelection={props.sortBy} onSelect={props.setSortBy}/>
       </InputGroup>
       </Row>
       </Container>
