@@ -63,8 +63,8 @@ function DashboardControl(props) {
       <label>SortBy</label>
       <SelectionDropdown selectionList={props.sortableList} currentSelection={props.sortBy} onSelect={props.setSortBy}/>
       </InputGroup>
-      </Row>
-      </Container>
+     </Row>
+   </Container>
   );
 }
 

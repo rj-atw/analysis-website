@@ -3,6 +3,7 @@ import React from 'react';
 import ChartWidget from './ChartWidget'
 import DashboardControl from './DashboardControl'
 import ChartTable from './ChartTable'
+import TableList from './TableList'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -111,20 +112,7 @@ class App extends React.Component {
              </Card.Body>
            </Card>  
          </Col>
-         <Col>
-             <Card>
-             <Card.Body>
-                <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[1].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
-                </Card.Body>
-            </Card>
-         </Col>
-         <Col>
-           <Card>
-               <Card.Body>
-                 <ChartTable data={this.state.data} columns={[this.state.data.schema.fields[0].name, this.state.data.schema.fields[2].name]} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
-               </Card.Body>
-           </Card>
-         </Col>
+         <TableList key={this.state.data.schema} data={this.state.data} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
       </Row>
       <Row>
           <Form>
