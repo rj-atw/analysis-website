@@ -62,12 +62,13 @@ class App extends React.Component {
     this.setSortBy = this.setSortBy.bind(this)
   }
 
-  setData(data) {
+  setData(data, serial) {
      this.setState( function(state,prop) { return { 
        charts: [],
        baseData: data, 
        data: data,
-       sortBy: getSortableColumnName(data.schema)[0]
+       sortBy: getSortableColumnName(data.schema)[0],
+       serial: serial
      }})
   }
 
@@ -112,8 +113,8 @@ class App extends React.Component {
              </Card.Body>
            </Card>  
          </Col>
-         <TableList key={this.state.data.schema} data={this.state.data} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
       </Row>
+      <TableList key={this.state.data.schema} data={this.state.data} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
       <Row>
           <Form>
             <Form.Label>Column Name</Form.Label>

@@ -11,9 +11,15 @@ function FileSelector(props) {
    const [value, setValue] = React.useState(defaultValue);
 
    function load() {
-     Table.from(fetch(value)).then(table =>
-       props.setData(table)
-     )
+     fetch(value).then(resp => {
+      return resp.arrayBuffer().then(data => {
+        const arr = new Uint8Array(data)
+
+        let d = Table.from(data)
+
+         props.setData(d, arr)
+       })
+     })
    }
    
    return (
