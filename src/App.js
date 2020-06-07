@@ -125,7 +125,9 @@ class App extends React.Component {
              </Card.Body>
            </Card>  
          </Col>
+         <Col lg={8}>
         <TableList key={this.state.data.schema} data={this.state.data} serial={this.state.serial} wasm={this.wasm} filters={this.state.filters} sortBy={this.state.sortBy}/>
+        </Col>
       </Row>
       <Row>
           <Form>
