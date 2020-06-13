@@ -117,7 +117,7 @@ export function compute(wasm_mod, a) {
   } else {
     let data = getUint8Memory0(wasm_mod).slice(out_ptr, out_ptr+size)
 
-    return Table.from(data).getColumn("result").toArray() 
+    return Table.from(data).getColumn("speech_ratio").toArray() 
   }
 }
 

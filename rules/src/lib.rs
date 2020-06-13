@@ -59,9 +59,7 @@ pub fn compute(
 fn write_batch_to_buffer(rb: RecordBatch, out_slice: & mut[u8]) -> Result<(), ArrowError> {
    let mut writer = arrow::ipc::writer::StreamWriter::try_new(
     out_slice,
-    &(arrow::datatypes::Schema::new(vec![
-      arrow::datatypes::Field::new("result", arrow::datatypes::DataType::UInt32, false)
-    ]))
+    &rb.schema()
    )?;
 
    writer.write(&rb)?;
