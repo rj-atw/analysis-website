@@ -27,20 +27,22 @@ import { Table } from "apache-arrow"
 
 import { Utf8Vector, FloatVector, predicate } from "apache-arrow"
 
-import {init} from "./wasm_interopt.js"
+import {init, compute} from "./wasm_interopt.js"
 
 async function getSerializedData() {
   return await fetch("/speeches.arrow")
 }
 
 async function generateData() {
-  return init().then(wasm => {
+  return init("add.wasm").then(wasm => {
     return getSerializedData().then(resp => {
       return resp.arrayBuffer().then(function(data) {
 
         const arr = new Uint8Array(data)
 
         let d = Table.from(data)
+
+        init("ratio_of_speeches.wasm").then( mod => console.log(compute(mod, arr)))
 
         return { data: d, value: arr, wasm: wasm }
       })

@@ -103,42 +103,37 @@ export function sort(wasm_mod, a, filter, idx, limit) {
     }
 }
 
-/**
-* @param {Uint32Array} a
-* @returns {number}
-*/
-export function reduce(wasm_mod, a) {
-    var ptr0 = passArray8ToWasm0(a, wasm_mod);
-    var len0 = WASM_VECTOR_LEN;
 
-    var ret = wasm_mod.reduce(ptr0, len0);
-    return ret >>> 0;
+export function compute(wasm_mod, a) {
+  const ptr0 = passArray8ToWasm0(a, wasm_mod)
+  const len0 = WASM_VECTOR_LEN
+
+  const size = len0
+  const out_ptr = wasm_mod.__wbindgen_malloc(size)
+
+  if(wasm_mod.compute(ptr0, len0, out_ptr, size) == 0) {
+    let err = new TextDecoder("utf-8").decode(getUint8Memory0(wasm_mod).slice(out_ptr, out_ptr+200))
+    console.log(err)
+  } else {
+    let data = getUint8Memory0(wasm_mod).slice(out_ptr, out_ptr+size)
+
+    return Table.from(data).getColumn("result").toArray() 
+  }
 }
 
-/**
-* @param {Uint32Array} a
-* @returns {number}
-*/
-export function map(wasm_mod, a) {
-    var ptr0 = passArray8ToWasm0(a, wasm_mod);
-    var len0 = WASM_VECTOR_LEN;
+export function init(file_name) {
+    if(!file_name.endsWith("wasm")) {
+      file_name = file_name + ".wasm"
+    }
 
-    var len1 = 500;
-    var ptr1 = wasm_mod.map(ptr0, len0) /8;
-
-    var ret = getBigInt64Memory0(wasm_mod).slice(ptr1, ptr1+len1);
-    return ret;
-}
-
-export function init() {
-    if(moduleCache.has("a")) {
-	    return Promise.resolve(moduleCache.get("a"))
+    if(moduleCache.has(file_name)) {
+	    return Promise.resolve(moduleCache.get(file_name))
     }
 
     let result;
     const imports = {};
 
-        const response = fetch("http://localhost:8080/add.wasm")
+        const response = fetch("http://localhost:8080/" + file_name)
         if (typeof WebAssembly.instantiateStreaming === 'function') {
             result = WebAssembly.instantiateStreaming(response, imports)
             .catch(e => {
@@ -161,7 +156,7 @@ export function init() {
     return result.then(({instance, module}) => {
         let wasm = instance.exports;
         init.__wbindgen_wasm_module = module;
-	      moduleCache.set("a", wasm)   
+	      moduleCache.set(file_name, wasm)   
 
         return wasm;
     });

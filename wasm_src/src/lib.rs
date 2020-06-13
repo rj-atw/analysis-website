@@ -17,60 +17,9 @@ pub fn readme() -> String {
   return String::from("Calculates the variance")
 }
 
-#[wasm_bindgen]
-pub fn reduce(a: &[u8]) -> u32 { 
-  let mut reader = arrow::ipc::reader::StreamReader::try_new(a).unwrap();
-
-  let batch = reader.next().unwrap().unwrap();
-
-  match batch.column(4).as_any().downcast_ref::<arrow::array::Float64Array>().and_then(|v| arrow::compute::sum(v)) {
-   Some(v) =>  v as u32, 
-   None => 0
-  }
-}
-
-#[wasm_bindgen]
-pub fn map(a: &[u8]) -> *const f64 { 
-  let mut reader = arrow::ipc::reader::StreamReader::try_new(a).unwrap();
-
-  let batch = reader.next().unwrap().unwrap();
-  
-  let arr = arrow::compute::kernels::sort::sort(batch.column(4), None).unwrap(); 
-
-  let arr_sorted = arrow::compute::limit(&arr, 500).unwrap();
-
-  let v = arr_sorted.as_any().downcast_ref::<arrow::array::Int64Array>().unwrap();
-
-  v.raw_values() as *const f64
-}
-
-#[wasm_bindgen]
-pub fn filter(a: &[u8], f: &[u8]) -> *const f64 { 
-  let mut reader = arrow::ipc::reader::StreamReader::try_new(a).unwrap();
-
-  let batch = reader.next().unwrap().unwrap();
-  
-  let mut builder = arrow::array::PrimitiveBuilder::<arrow::datatypes::BooleanType>::new(f.len());
-
-  //builder.append_slice( unsafe { mem::transmute::<&[u8], &[bool]>(f) });
-  for &b in f {
-    builder.append_value(if b > 0 {true} else {false}).unwrap();
-  }
-
-  let filter = builder.finish();
-
-
-  let farr = arrow::compute::filter(batch.column(4).as_ref(), &filter).unwrap();
-  let arr = arrow::compute::kernels::sort::sort(&farr, None).unwrap(); 
-  let arr_sorted = arrow::compute::limit(&arr, 500).unwrap();
-  let v = arr_sorted.as_any().downcast_ref::<arrow::array::Int64Array>().unwrap();
-
-  v.raw_values() as *const f64
-}
-
 fn limit_sorted_filter_propagate_error(
-  a: &[u8], f: &[u8], idx: u32, limit: u32, out: *mut u8, size: u32) 
--> Result<*const u8, arrow::error::ArrowError> { 
+  a: &[u8], f: &[u8], idx: u32, limit: u32, out_slice: & mut [u8]) 
+-> Result<(), arrow::error::ArrowError> { 
    let mut reader = arrow::ipc::reader::StreamReader::try_new(a)?;
 
 
@@ -84,7 +33,7 @@ fn limit_sorted_filter_propagate_error(
   let arr = arrow::compute::kernels::sort::sort_to_indices(
     &batch.column(idx as usize),
     Some(arrow::compute::kernels::sort::SortOptions{ 
-      descending: false, 
+      descending: true, 
       nulls_first: true
     })
   )?;
@@ -109,12 +58,6 @@ fn limit_sorted_filter_propagate_error(
 
   let v = builder.finish();
 
-/*
-  unsafe {
-      std::ptr::copy_nonoverlapping(v.raw_values(), out as *mut u32, limit as usize)
-  }
-*/
-
   let rb = arrow::record_batch::RecordBatch::try_new( 
     std::sync::Arc::new(arrow::datatypes::Schema::new(vec![
       arrow::datatypes::Field::new("result", arrow::datatypes::DataType::UInt32, false)
@@ -122,7 +65,6 @@ fn limit_sorted_filter_propagate_error(
     vec![std::sync::Arc::new(v)]
    )?;
 
-   let out_slice = unsafe { std::slice::from_raw_parts_mut(out, size as usize) };
 
    let mut writer = arrow::ipc::writer::StreamWriter::try_new(
     out_slice,
@@ -136,7 +78,7 @@ fn limit_sorted_filter_propagate_error(
    writer.finish()?;
      
 
-  Ok(out)
+  Ok(())
 }
  
 /*
@@ -145,7 +87,9 @@ fn limit_sorted_filter_propagate_error(
 #[wasm_bindgen]
 pub fn limit_sorted_filter(a: &[u8], f: &[u8], idx: u32, limit: u32, out: *mut u8, size: u32, err: *mut u8) 
 -> *const u8 { 
-  let rtn = limit_sorted_filter_propagate_error(a,f,idx,limit,out,size);
+  let out_slice = unsafe { std::slice::from_raw_parts_mut(out, size as usize) };
+
+  let rtn = limit_sorted_filter_propagate_error(a,f,idx,limit,out_slice);
 
   match rtn {
     Ok(_) => {
