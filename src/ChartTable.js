@@ -16,7 +16,7 @@ import Table from 'react-bootstrap/Table';
 
 import {predicate} from "apache-arrow";
 
-import { init, sort } from "./wasm_interopt";
+import { sort } from "./wasm_interopt";
 
 
 function createFilterVector(table, filter) {

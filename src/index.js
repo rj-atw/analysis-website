@@ -14,20 +14,20 @@
 import './style.scss'
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'
 
 import App from './App'
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
 
-import { Table } from "apache-arrow";
+import { Table } from "apache-arrow"
 
-import { Utf8Vector, FloatVector, predicate } from "apache-arrow";
+import { Utf8Vector, FloatVector, predicate } from "apache-arrow"
 
-import { init, reduce, map, filter, sort } from "./wasm_interopt";
+import {init} from "./wasm_interopt.js"
 
 async function getSerializedData() {
   return await fetch("/speeches.arrow")

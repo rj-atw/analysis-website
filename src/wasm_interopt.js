@@ -9,6 +9,7 @@
 // https://opensource.org/licenses/CDDL-1.0
 //
 
+import { Table } from "apache-arrow";
 
 let cachegetUint8Memory0 = new Map();
 let cachegetFloat64Memory0 = new Map();
@@ -83,19 +84,22 @@ export function sort(wasm_mod, a, filter, idx, limit) {
     var len0 = WASM_VECTOR_LEN;
     var ptr1 = passArray8ToWasm0(filter, wasm_mod);
 
-    const out_ptr = wasm_mod.__wbindgen_malloc(limit*4);
+    const size = limit*4+1000;
+    const out_ptr = wasm_mod.__wbindgen_malloc(size);
     const err_ptr = wasm_mod.__wbindgen_malloc(200);
 
-    var ret_ptr = wasm_mod.limit_sorted_filter(ptr0, len0, ptr1, filter.length, idx, limit, out_ptr, err_ptr)/4;
+    var ret_ptr = wasm_mod.limit_sorted_filter(ptr0, len0, ptr1, filter.length, idx, limit, out_ptr, size, err_ptr);
     if(ret_ptr==0) {
       var err = new TextDecoder("utf-8").decode(getUint8Memory0(wasm_mod).slice(err_ptr, err_ptr+200))
       console.log(err)
 
       return null
     } else {
-      var ret = getUint32Memory0(wasm_mod).slice(ret_ptr, ret_ptr+limit)
-
-      return ret
+      var data = getUint8Memory0(wasm_mod).slice(ret_ptr, ret_ptr+size)
+        
+      let d = Table.from(data)
+      
+      return d.getColumn("result").toArray()
     }
 }
 
