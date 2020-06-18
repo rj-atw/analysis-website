@@ -12,7 +12,8 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 wasm-bindgen = "0.2"
-arrow = { git = "https://github.com/rj-atw/arrow.git", version = "0.18.1-SNAPSHOT"}
+arrow = { git = "https://github.com/rj-atw/arrow.git", version = "1.0.0-SNAPSHOT"}
+datafusion = { git = "https://github.com/rj-atw/arrow.git", version = "1.0.0-SNAPSHOT"}
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires

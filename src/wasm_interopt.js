@@ -63,22 +63,6 @@ function passArray8ToWasm0(arg, wasm_mod) {
 * @param {Uint32Array} a
 * @returns {number}
 */
-export function filter(wasm_mod, a, filter) {
-    var ptr0 = passArray8ToWasm0(a, wasm_mod);
-    var len0 = WASM_VECTOR_LEN;
-    var ptr1 = passArray8ToWasm0(filter, wasm_mod);
-
-
-    var ret_ptr = wasm_mod.filter(ptr0, len0, ptr1, filter.length)/8;
-    var ret = getBigInt64Memory0(wasm_mod).slice(ret_ptr, ret_ptr+10);
-
-    return ret
-}
-
-/**
-* @param {Uint32Array} a
-* @returns {number}
-*/
 export function sort(wasm_mod, a, filter, idx, limit) {
     var ptr0 = passArray8ToWasm0(a, wasm_mod);
     var len0 = WASM_VECTOR_LEN;
@@ -116,8 +100,9 @@ export function compute(wasm_mod, a) {
     console.log(err)
   } else {
     let data = getUint8Memory0(wasm_mod).slice(out_ptr, out_ptr+size)
-
-    return Table.from(data).getColumn("speech_ratio").toArray() 
+    
+    let d = Table.from(data)
+    return d.getColumn("speech_ratio").toArray() 
   }
 }
 
